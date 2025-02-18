@@ -6,7 +6,8 @@ class Program
 	{
 		var builder = WebApplication.CreateBuilder(args);
 		builder.Services.AddRazorPages();
-		builder.Services.AddW3CLogging(logging => {
+		builder.Services.AddW3CLogging(logging =>
+		{
 			logging.LoggingFields = W3CLoggingFields.All;
 			logging.AdditionalRequestHeaders.Add("x-forwarded-for");
 		});
