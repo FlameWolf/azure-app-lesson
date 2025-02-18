@@ -1,26 +1,28 @@
-var builder = WebApplication.CreateBuilder(args);
+using Microsoft.AspNetCore.HttpLogging;
 
-// Add services to the container.
-builder.Services.AddRazorPages();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+class Program
 {
-    app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+	public static void Main(string[] args)
+	{
+		var builder = WebApplication.CreateBuilder(args);
+		builder.Services.AddRazorPages();
+		builder.Services.AddW3CLogging(logging => {
+			logging.LoggingFields = W3CLoggingFields.All;
+			logging.AdditionalRequestHeaders.Add("x-forwarded-for");
+		});
+		var app = builder.Build();
+		if (!app.Environment.IsDevelopment())
+		{
+			app.UseExceptionHandler("/Error");
+			app.UseHsts();
+		}
+		app.UseHttpsRedirection();
+		app.UseRouting();
+		app.UseAuthorization();
+		app.MapStaticAssets();
+		app.UseW3CLogging();
+		app.MapRazorPages()
+		   .WithStaticAssets();
+		app.Run();
+	}
 }
-
-app.UseHttpsRedirection();
-
-app.UseRouting();
-
-app.UseAuthorization();
-
-app.MapStaticAssets();
-app.MapRazorPages()
-   .WithStaticAssets();
-
-app.Run();
